@@ -8,7 +8,6 @@ today = Time.now
 def city_name(city)
   # Remove unwanted number and direction from city
   # city_name("6 SE ATLANTA") => "ATLANTA"
-
   directions = ["N", "S", "E", "W", "NE", "NW", "SE", "SW", "NNE", "ENE", "ESE", "SSE", "NNW", "WNW", "WSW", "SSW"]
   city_array = city.split(" ")
   if (city_array[0].to_i.to_s == city_array[0])
@@ -20,14 +19,25 @@ def city_name(city)
   city_array.join(" ")
 end
 
+def standard_time(time, date)
+  if time[0..1].to_i < 12
+    day = date.to_date.next.mday
+  else
+    day = date.to_date.mday
+  end
+
+  standard_time = DateTime.new(date.to_date.year, date.to_date.month, day, time[0..1].to_i, time[2..3].to_i)
+end
+
 def get_csv(date)
   filename = "http://www.spc.noaa.gov/climo/reports/" + date.strftime("%y%m%d") + "_rpts_hail.csv"
   csvfile = open(filename)
   puts "--------------- " + filename + " --------------"
 
   csv = CSV.parse(csvfile, { :headers => true, :liberal_parsing => true })
+  puts csv.length.to_s + " records"
   csv.each do |row|
-    time = row[0]
+    time = standard_time(row[0], date)
     size = row[1]
     location = row[2]
     city = city_name(row[2])
@@ -37,7 +47,7 @@ def get_csv(date)
     lon = row[6]
     comments = row[7]
 
-    puts DateTime.new(date.to_date.year, date.to_date.month, date.to_date.mday, time[0..1].to_i, time[2..3].to_i)
+    Report.create(time: time, size: size, location: location, city: city, county: county, state: state, lat: lat, lon: lon, comments: comments)
   end
 end
 
