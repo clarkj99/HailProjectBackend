@@ -51,6 +51,6 @@ def get_csv(date)
   end
 end
 
-10.times do |i|
+730.times do |i|
   get_csv(Date.today.prev_day(i))
 end
