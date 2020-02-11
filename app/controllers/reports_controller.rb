@@ -13,6 +13,15 @@ class ReportsController < ApplicationController
     render json: @report
   end
 
+  #GET /dates
+  def dates
+    dates = Report.pluck(:time)
+    dates_only = dates.map do |date|
+      date.to_date
+    end
+    render json: dates_only.uniq
+  end
+
   # POST /reports
   def create
     @report = Report.new(report_params)
@@ -39,13 +48,14 @@ class ReportsController < ApplicationController
   end
 
   private
-    # Use callbacks to share common setup or constraints between actions.
-    def set_report
-      @report = Report.find(params[:id])
-    end
 
-    # Only allow a trusted parameter "white list" through.
-    def report_params
-      params.require(:report).permit(:time, :size, :location, :city, :county, :state, :lat, :lon, :comments, :filename)
-    end
+  # Use callbacks to share common setup or constraints between actions.
+  def set_report
+    @report = Report.find(params[:id])
+  end
+
+  # Only allow a trusted parameter "white list" through.
+  def report_params
+    params.require(:report).permit(:time, :size, :location, :city, :county, :state, :lat, :lon, :comments, :filename)
+  end
 end
