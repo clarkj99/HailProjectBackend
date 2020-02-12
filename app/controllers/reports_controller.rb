@@ -3,7 +3,7 @@ class ReportsController < ApplicationController
 
   # GET /reports
   def index
-    @reports = Report.all
+    @reports = Report.order(time: :desc)
 
     render json: @reports
   end
@@ -15,7 +15,7 @@ class ReportsController < ApplicationController
 
   #GET /dates
   def dates
-    dates = Report.pluck(:time)
+    dates = Report.order(time: :desc).pluck(:time)
     dates_only = dates.map do |date|
       date.to_date
     end
