@@ -3,9 +3,12 @@ class ReportsController < ApplicationController
 
   # GET /reports
   def index
-    @reports = Report.order(time: :desc)
+    start_date = (params[:year] || "2020").to_i
+    end_date = start_date + 1
 
-    render json: @reports
+    @reports = Report.where("time > ? AND time < ?", DateTime.new(start_date), DateTime.new(end_date)).order(time: :desc)
+
+    render json: { count: @reports.count, reports: @reports }
   end
 
   # GET /reports/1
